@@ -4,6 +4,7 @@ const cors = require("cors");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const app = express();
+require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
@@ -12,13 +13,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Connect to MongoDB
-mongoose
-    .connect("mongodb://localhost:27017/globetrotter", {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .then(() => console.log("Connected to MongoDB"))
-    .catch(err => console.error("Could not connect to MongoDB", err));
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Could not connect to MongoDB', err));
 
 // Destination Schema
 const destinationSchema = new mongoose.Schema({
@@ -55,6 +52,14 @@ app.get("/api/destination", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+// User Schema and Model
+const userSchema = new mongoose.Schema({
+  username: { type: String, unique: true, required: true },
+  score: { type: Number, default: 0 },
+});
+
+const User = mongoose.model("User", userSchema);
 
 // POST /api/guess - Validate user's guess
 app.post("/api/guess", async (req, res) => {
@@ -117,13 +122,6 @@ app.post("/api/guess", async (req, res) => {
     }
 });
 
-// User Registration
-const userSchema = new mongoose.Schema({
-    username: { type: String, unique: true, required: true },
-    score: { type: Number, default: 0 },
-});
-
-const User = mongoose.model("User", userSchema);
 
 // POST /api/register - Register a new user
 app.post("/api/register", async (req, res) => {
@@ -163,7 +161,7 @@ app.get("/api/challenge/:username", async (req, res) => {
         }
 
         // Generate a shareable link
-        const shareLink = `https://your-app.com/challenge?username=${username}&score=${user.score}`;
+        const shareLink = `https://${req.headers.host}/challenge?username=${username}&score=${user.score}`;
 
         res.json({ shareLink });
     } catch (error) {
