@@ -4,7 +4,7 @@ const cors = require("cors");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const app = express();
-require('dotenv').config();
+require("dotenv").config();
 
 app.use(cors());
 app.use(express.json());
@@ -13,9 +13,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Could not connect to MongoDB', err));
+mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch(err => console.error("Could not connect to MongoDB", err));
 
 // Destination Schema
 const destinationSchema = new mongoose.Schema({
@@ -29,6 +30,15 @@ const destinationSchema = new mongoose.Schema({
 
 const Destination = mongoose.model("Destination", destinationSchema);
 
+// Utility function to shuffle an array
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 // GET /api/destination - Fetch a random destination
 app.get("/api/destination", async (req, res) => {
     try {
@@ -39,6 +49,9 @@ app.get("/api/destination", async (req, res) => {
         if (!destination) {
             return res.status(404).json({ error: "No destinations found" });
         }
+
+        // Shuffle the answers array
+        destination.answers = shuffleArray(destination.answers);
 
         // Generate a JWT token containing the destinationId
         const token = jwt.sign({ destinationId: destination._id }, "secret", {
@@ -55,8 +68,8 @@ app.get("/api/destination", async (req, res) => {
 
 // User Schema and Model
 const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true, required: true },
-  score: { type: Number, default: 0 },
+    username: { type: String, unique: true, required: true },
+    score: { type: Number, default: 0 },
 });
 
 const User = mongoose.model("User", userSchema);
@@ -121,7 +134,6 @@ app.post("/api/guess", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 // POST /api/register - Register a new user
 app.post("/api/register", async (req, res) => {
