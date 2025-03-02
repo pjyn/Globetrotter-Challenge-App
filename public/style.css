@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+#clue {
+    font-size: 1.5em;
+    margin: 20px 0;
+}
+#guessInput {
+    padding: 10px;
+    font-size: 1em;
+    width: 80%;
+    margin-bottom: 20px;
+}
+#submitGuess {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+}
+#result {
+    margin: 20px 0;
+    font-size: 1.2em;
+}
+#funFact,
+#trivia {
+    margin: 10px 0;
+    font-style: italic;
+}
+
+#result,
+#funFact,
+#trivia,
+#sadFace {
+    transition: opacity 0.5s ease-in-out;
+}
+
+#sadFace {
+    display: none;
+    font-size: 3em;
+    animation: sadFaceAnimation 1s ease-in-out;
+}
+
+@keyframes sadFaceAnimation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
